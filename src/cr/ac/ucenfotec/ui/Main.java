@@ -1,9 +1,8 @@
-package ui;
-
-import bi.DiccionarioTecnico;
-import bi.RegistroUsuarios;
+package cr.ac.ucenfotec.ui;
 
 import java.util.Scanner;
+import cr.ac.ucenfotec.bl.PalabraTecnica;
+import cr.ac.ucenfotec.bl.Usuario;
 
 public class Main {
 
@@ -14,8 +13,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        RegistroUsuarios usuarios = new RegistroUsuarios();
-        DiccionarioTecnico diccionario = new DiccionarioTecnico();
+        Usuario usuarios = new Usuario();
+        PalabraTecnica diccionario = new PalabraTecnica();
         Scanner sc = new Scanner(System.in);
 
         while (true) {
