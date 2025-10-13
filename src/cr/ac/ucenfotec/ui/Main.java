@@ -3,6 +3,8 @@ package cr.ac.ucenfotec.ui;
 import java.util.Scanner;
 import cr.ac.ucenfotec.bl.PalabraTecnica;
 import cr.ac.ucenfotec.bl.Usuario;
+import cr.ac.ucenfotec.bl.Departamento;
+import cr.ac.ucenfotec.bl.PalabraEmocional;
 
 public class Main {
 
@@ -14,7 +16,9 @@ public class Main {
 
     public static void main(String[] args) {
         Usuario usuarios = new Usuario();
-        PalabraTecnica diccionario = new PalabraTecnica();
+        PalabraTecnica diccionarioTecnico = new PalabraTecnica();
+        Departamento departamentos = new Departamento();
+        PalabraEmocional diccionarioEmocional = new PalabraEmocional();
         Scanner sc = new Scanner(System.in);
 
         while (true) {
@@ -22,8 +26,12 @@ public class Main {
                     MENÚ PRINCIPAL (Consola)
                     1) Registrar Usuario
                     2) Listar Usuarios
-                    3) Registrar Palabra Técnica
-                    4) Listar Palabras Técnicas
+                    3) Registrar Departamento
+                    4) Listar Departamentos
+                    5) Registrar Palabra Técnica
+                    6) Listar Palabras Técnicas
+                    7) Registrar Palabras Emocionales
+                    8) Listar Palabras Emocionales
                     0) Salir
                     """);
             System.out.print("Opción: ");
@@ -61,21 +69,84 @@ public class Main {
                         break;
                     }
                     case "3": {
+                        System.out.print("Nombre de Departamento: ");
+                        String nombre = sc.nextLine();
+                        System.out.print("Funciones: ");
+                        String funciones = sc.nextLine();
+                        System.out.print("Correo (opcional): ");
+                        String correo = sc.nextLine();
+                        System.out.print("Número de extensión (opcional): ");
+                        String extInput = sc.nextLine();
+
+                        int extension = 0; // valor por defecto si no escribe nada
+                        if (!extInput.isBlank()) {  // solo intentamos convertir si escribió algo
+                            try {
+                                extension = Integer.parseInt(extInput);
+                            } catch (NumberFormatException e) {
+                                System.out.println("Error: El número de extensión debe ser un entero.");
+                                presionaEnter(sc);
+                                return; // o manejar como quieras
+                            }
+                        }
+
+                        var d = departamentos.registrar(nombre, funciones, correo, extension);
+                        System.out.println("\n Departamento creado :) = \n");
+
+                        d.imprimirInfo();
+
+                        presionaEnter(sc);
+                        break;
+                    }
+                    case "4": {
+                        System.out.println("Departamentos");
+                        departamentos.listar().forEach(d -> {
+                            d.imprimirInfo();
+                            System.out.println("-----------------------------");
+                        });
+
+                        presionaEnter(sc);
+                        break;
+                    }
+                    case "5": {
                         System.out.print("Palabra técnica: ");
                         String palabra = sc.nextLine();
                         System.out.print("Categoría (REDES/IMPRESORAS/CUENTAS/HARDWARE/SOFTWARE/OTROS): ");
                         String categoria = sc.nextLine();
 
-                        var p = diccionario.registrar(palabra, categoria);
+                        var p = diccionarioTecnico.registrar(palabra, categoria);
                         System.out.println("Palabra técnica creada:");
                         p.imprimirInfo();
 
                         presionaEnter(sc);
                         break;
                     }
-                    case "4": {
+                    case "6": {
                         System.out.println("Diccionario Técnico");
-                        diccionario.listar().forEach(p -> {
+                        diccionarioTecnico.listar().forEach(p -> {
+                            p.imprimirInfo();
+                            System.out.println("-----------------------------");
+                        });
+
+                        presionaEnter(sc);
+                        break;
+                    }
+                    case "7": {
+                        System.out.print("Palabra Emocional: ");
+                        String palabra = sc.nextLine();
+                        System.out.print("Emoción: ");
+                        String emocion = sc.nextLine();
+
+                        var p = diccionarioEmocional.registrar(palabra, emocion);
+                        System.out.println("\n Palabra emocional creada: \n");
+
+                        p.imprimirInfo();
+
+                        presionaEnter(sc);
+                        break;
+                    }
+                    case "8": {
+                        System.out.println("Diccionario Emocional");
+                        diccionarioEmocional.listar().forEach(p -> {
                             p.imprimirInfo();
                             System.out.println("-----------------------------");
                         });
