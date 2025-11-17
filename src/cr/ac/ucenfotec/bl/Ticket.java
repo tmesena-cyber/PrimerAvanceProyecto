@@ -18,7 +18,7 @@ public class Ticket {
         this.id = UUID.randomUUID().toString();
         this.asunto = asunto;
         this.descripcion = descripcion;
-        this.estado = "nuevo";
+        this.estado = "nuevo"; // estado inicial
         this.usuario = usuario;
         this.departamento = departamento;
     }
@@ -32,12 +32,22 @@ public class Ticket {
     public Usuario getUsuario() { return usuario; }
     public Departamento getDepartamento() { return departamento; }
 
+    // NUEVO: permitir cambiar el estado del ticket
+    public void setEstado(String estado) {
+        if (estado == null || estado.isBlank()) {
+            throw new IllegalArgumentException("El estado no puede ser vacío.");
+        }
+        this.estado = estado.trim();
+    }
+
+    // Registrar = crear y almacenar en memoria
     public Ticket registrar(String asunto, String descripcion, Usuario usuario, Departamento departamento) {
         Ticket t = new Ticket(asunto.trim(), descripcion.trim(), usuario, departamento);
         tickets.add(t);
         return t;
     }
 
+    // Listar todos los tickets almacenados
     public List<Ticket> listar() {
         return List.copyOf(tickets);
     }

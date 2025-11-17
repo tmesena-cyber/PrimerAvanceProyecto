@@ -1,150 +1,117 @@
 package cr.ac.ucenfotec.bl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
+import java.util.*;
 
 public class BoWAnalyzer {
 
-    private final PalabraEmocional emocionalManager;
-    private final PalabraTecnica tecnicaManager;
+    private PalabraEmocional dicEmocional;
+    private PalabraTecnica dicTecnica;
 
-    public BoWAnalyzer(PalabraEmocional emocionalManager, PalabraTecnica tecnicaManager) {
-        this.emocionalManager = emocionalManager;
-        this.tecnicaManager = tecnicaManager;
+    public BoWAnalyzer(PalabraEmocional emo, PalabraTecnica tec) {
+        this.dicEmocional = emo;
+        this.dicTecnica = tec;
     }
 
-    // ESTE ES EL MÉTODO QUE FALTA O ESTÁ MAL ESCRITO EN TU ARCHIVO
     public Map<String, Object> analizarTicket(Ticket ticket) {
 
-        String descripcion = ticket.getDescripcion();
+        Map<String, Object> resultado = new HashMap<>();
 
-        List<String> tokensLimpios = PreProcesamientoTexto.preprocesar(descripcion);
+        if (ticket == null || ticket.getDescripcion() == null) {
+            resultado.put("ClasificacionTecnica", "N/A");
+            resultado.put("ScoreTecnico", 0);
+            resultado.put("DetallesTecnicos", Collections.emptyMap());
 
-        Map<String, Integer> vectorTF = generarVectorTF(tokensLimpios);
+            resultado.put("EstadoDeAnimo", "N/A");
+            resultado.put("ScoreEmocional", 0);
+            resultado.put("DetallesEmocionales", Collections.emptyMap());
 
-        Map<String, Object> analisisEmocional = detectarEstadoDeAnimo(vectorTF);
+            return resultado;
+        }
 
-        Map<String, Object> analisisTecnico = clasificarTecnicamente(vectorTF);
+        // =======================================================
+        // PREPROCESAMIENTO
+        // =======================================================
+        String texto = ticket.getDescripcion().toLowerCase();
+        texto = texto.replaceAll("[^a-záéíóúñ0-9 ]", "");
+        String[] tokens = texto.split("\\s+");
 
-        Map<String, Object> resultados = new HashMap<>();
-        resultados.put("VectorTF", vectorTF);
-        resultados.putAll(analisisEmocional);
-        resultados.putAll(analisisTecnico);
+        Map<String, Integer> conteoTecnico = new HashMap<>();
+        Map<String, Integer> conteoEmocional = new HashMap<>();
 
-        return resultados;
-    }
+        int scoreTecnico = 0;
+        int scoreEmocional = 0;
 
-    private Map<String, Integer> generarVectorTF(List<String> tokens) {
-        Map<String, Integer> vector = new HashMap<>();
-        for (String token : tokens) {
-            String cleanToken = token.trim();
-            if (!cleanToken.isEmpty()) {
-                vector.put(cleanToken, vector.getOrDefault(cleanToken, 0) + 1);
+        // =======================================================
+        // ANÁLISIS DE PALABRAS
+        // =======================================================
+        for (String palabra : tokens) {
+
+            // ------- TÉCNICAS -------
+            PalabraTecnica encontradaTec = dicTecnica.buscarPorPalabra(palabra);
+            if (encontradaTec != null) {
+                conteoTecnico.put(
+                        palabra,
+                        conteoTecnico.getOrDefault(palabra, 0) + 1
+                );
+                scoreTecnico++;
+            }
+
+            // ------- EMOCIONALES (ADAPTADO A TU PALABRAEMOCIONAL) -------
+            String emocionEncontrada = buscarEmocion(palabra);
+            if (emocionEncontrada != null) {
+                conteoEmocional.put(
+                        emocionEncontrada,
+                        conteoEmocional.getOrDefault(emocionEncontrada, 0) + 1
+                );
+                scoreEmocional++;
             }
         }
-        return vector;
+
+        // =======================================================
+        // CLASIFICAR TÉCNICO
+        // =======================================================
+        String clasificacionTecnica = (scoreTecnico > 0)
+                ? "Problema Técnico"
+                : "Sin coincidencias técnicas";
+
+        // =======================================================
+        // CLASIFICAR EMOCIONAL
+        // =======================================================
+        String estadoEmocional = (scoreEmocional > 0)
+                ? "Emocional Detectado"
+                : "Neutral";
+
+        // =======================================================
+        // RESULTADO FINAL
+        // =======================================================
+        resultado.put("ClasificacionTecnica", clasificacionTecnica);
+        resultado.put("ScoreTecnico", scoreTecnico);
+        resultado.put("DetallesTecnicos", conteoTecnico);
+
+        resultado.put("EstadoDeAnimo", estadoEmocional);
+        resultado.put("ScoreEmocional", scoreEmocional);
+        resultado.put("DetallesEmocionales", conteoEmocional);
+
+        return resultado;
     }
 
-    /* private Map<String, Object> detectarEstadoDeAnimo(Map<String, Integer> vectorTF) {
-        Map<String, Integer> scoreEmociones = new HashMap<>();
-        String dominante = "NEUTRO";
-        int maxScore = 0;
+    // =======================================================
+    //  MÉTODO PARA BUSCAR EMOCIONES EN TU MAP
+    // =======================================================
+    private String buscarEmocion(String palabra) {
 
-        List<PalabraEmocional> diccionario = emocionalManager.listar();
+        Map<String, List<String>> mapa = dicEmocional.getDiccionarioEmocional();
 
-        for (Map.Entry<String, Integer> entry : vectorTF.entrySet()) {
-            String token = entry.getKey();
-            int frecuencia = entry.getValue();
+        for (String emocion : mapa.keySet()) {
+            List<String> listaPalabras = mapa.get(emocion);
 
-            for (PalabraEmocional palabraEmocional : diccionario) {
-                if (palabraEmocional.getPalabra().equals(token)) {
-                    String emocion = palabraEmocional.getEmocion();
-                    int nuevoScore = scoreEmociones.getOrDefault(emocion, 0) + frecuencia;
-                    scoreEmociones.put(emocion, nuevoScore);
-
-                    if (nuevoScore > maxScore) {
-                        maxScore = nuevoScore;
-                        dominante = emocion;
-                    }
+            for (String p : listaPalabras) {
+                if (p.equalsIgnoreCase(palabra)) {
+                    return emocion;
                 }
             }
         }
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("EstadoDeAnimo", dominante);
-        resultado.put("ScoreEmocional", maxScore);
-        resultado.put("DetallesEmocionales", scoreEmociones);
-
-        return resultado;
-    } */
-
-    private Map<String, Object> detectarEstadoDeAnimo(Map<String, Integer> vectorTF) {
-        Map<String, Integer> scoreEmociones = new HashMap<>();
-        String dominante = "NEUTRO";
-        int maxScore = 0;
-
-        // Iteramos sobre el diccionario emocional
-        Map<String, List<String>> diccionario = emocionalManager.getDiccionarioEmocional();
-
-        for (Map.Entry<String, List<String>> entry : diccionario.entrySet()) {
-            String emocion = entry.getKey();
-            List<String> palabras = entry.getValue();
-
-            int score = 0;
-            for (String palabra : palabras) {
-                score += vectorTF.getOrDefault(palabra, 0);
-            }
-
-            if (score > 0) {
-                scoreEmociones.put(emocion, score);
-            }
-
-            if (score > maxScore) {
-                maxScore = score;
-                dominante = emocion;
-            }
-        }
-
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("EstadoDeAnimo", dominante);
-        resultado.put("ScoreEmocional", maxScore);
-        resultado.put("DetallesEmocionales", scoreEmociones);
-
-        return resultado;
-    }
-
-    private Map<String, Object> clasificarTecnicamente(Map<String, Integer> vectorTF) {
-        Map<String, Integer> scoreCategorias = new HashMap<>();
-        String dominante = "OTROS";
-        int maxScore = 0;
-
-        List<PalabraTecnica> diccionario = tecnicaManager.listar();
-
-        for (Map.Entry<String, Integer> entry : vectorTF.entrySet()) {
-            String token = entry.getKey();
-            int frecuencia = entry.getValue();
-
-            for (PalabraTecnica palabraTecnica : diccionario) {
-                if (palabraTecnica.getPalabra().equals(token)) {
-                    String categoria = palabraTecnica.getCategoriaTecnica();
-                    int nuevoScore = scoreCategorias.getOrDefault(categoria, 0) + frecuencia;
-                    scoreCategorias.put(categoria, nuevoScore);
-
-                    if (nuevoScore > maxScore) {
-                        maxScore = nuevoScore;
-                        dominante = categoria;
-                    }
-                }
-            }
-        }
-
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("ClasificacionTecnica", dominante);
-        resultado.put("ScoreTecnico", maxScore);
-        resultado.put("DetallesTecnicos", scoreCategorias);
-
-        return resultado;
+        return null;
     }
 }
