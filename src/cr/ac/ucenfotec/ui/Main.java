@@ -22,23 +22,27 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-        MenuEmociones menuEmociones = new MenuEmociones(diccionarioEmocional, sc);
 
-        while (true) {
-            System.out.println("""
-                    MENÚ PRINCIPAL (Consola)
-                    1) Registrar Usuario
-                    2) Listar Usuarios
-                    3) Registrar Departamento
-                    4) Listar Departamentos
-                    5) Registrar Palabra Técnica
-                    6) Listar Palabras Técnicas
-                    7) Gestionar Palabras Emocionales
-                    8) Listar Palabras Emocionales
-                    9) Registrar Ticket
-                    10) Listar Tickets y Analizar BoW
-                    0) Salir
-                    """);
+        Usuario usuarioManager = new Usuario();
+        Departamento departamentoManager = new Departamento();
+        PalabraEmocional emocionalManager = new PalabraEmocional();
+        PalabraTecnica tecnicaManager = new PalabraTecnica();
+        Ticket ticketManager = new Ticket();
+        BoWAnalyzer bowAnalyzer = new BoWAnalyzer(emocionalManager, tecnicaManager);
+
+        boolean salir = false;
+
+        while (!salir) {
+            System.out.println("MENÚ PRINCIPAL (Consola)");
+            System.out.println("1) Registrar Usuario");
+            System.out.println("2) Listar Usuarios");
+            System.out.println("3) Registrar Departamento");
+            System.out.println("4) Listar Departamentos");
+            System.out.println("6) Listar Palabras Técnicas");
+            System.out.println("9) Registrar Ticket");
+            System.out.println("10) Listar Tickets y Analizar BoW");
+            System.out.println("11) Cambiar estado de Ticket");
+            System.out.println("0) Salir");
             System.out.print("Opción: ");
             String opcion = sc.nextLine().trim();
 
@@ -174,56 +178,6 @@ public class Main {
                         presionaEnter(sc);
                         break;
                     }
-                    case "7": {
-                        menuEmociones.mostrarMenu();
-                        presionaEnter(sc);
-                        break;
-                    }
-                    case "8": {
-
-
-                        presionaEnter(sc);
-                        break;
-                    }
-                    case "9": {
-                        // 1. Verificar si existen dependencias
-                        List<Usuario> listaUsuarios = usuarios.listar();
-                        List<Departamento> listaDeptos = departamentos.listar();
-
-                        if (listaUsuarios.isEmpty() || listaDeptos.isEmpty()) {
-                            System.out.println("(!) Error: Necesitas registrar al menos un Usuario y un Departamento.");
-                            presionaEnter(sc);
-                            break;
-                        }
-
-                        System.out.println("\n--- REGISTRO DE TICKET ---");
-                        System.out.print("Asunto del Ticket: ");
-                        String asunto = sc.nextLine();
-
-                        System.out.print("Descripción del problema (el texto para BoW): ");
-                        String descripcion = sc.nextLine();
-
-                        // Selección de Usuario
-                        System.out.println("\n--- Seleccione Usuario ---");
-                        for (int i = 0; i < listaUsuarios.size(); i++) {
-                            System.out.println((i + 1) + ") " + listaUsuarios.get(i).getNombreCompleto());
-                        }
-                        System.out.print("Número de Usuario: ");
-                        int userIndex = Integer.parseInt(sc.nextLine()) - 1;
-                        Usuario usuarioSeleccionado = listaUsuarios.get(userIndex);
-
-                        // Selección de Departamento
-                        System.out.println("\n--- Seleccione Departamento ---");
-                        for (int i = 0; i < listaDeptos.size(); i++) {
-                            System.out.println((i + 1) + ") " + listaDeptos.get(i).getNombre());
-                        }
-                        System.out.print("Número de Departamento: ");
-                        int deptoIndex = Integer.parseInt(sc.nextLine()) - 1;
-                        Departamento deptoSeleccionado = listaDeptos.get(deptoIndex);
-
-                        // Registrar Ticket
-                        Ticket t = ticketsManager.registrar(asunto, descripcion, usuarioSeleccionado, deptoSeleccionado);
-                        System.out.println("\n [OK] Ticket Creado: " + t.getId() + "\n");
                     Usuario uSel = usuarios.get(idxUsuario);
 
                     System.out.println();
