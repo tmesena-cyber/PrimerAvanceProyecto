@@ -3,7 +3,6 @@ package cr.ac.ucenfotec.ui;
 import java.util.Scanner;
 import java.util.Map;
 import java.util.List;
-
 import cr.ac.ucenfotec.bl.PalabraTecnica;
 import cr.ac.ucenfotec.bl.Usuario;
 import cr.ac.ucenfotec.bl.Departamento;
@@ -11,24 +10,25 @@ import cr.ac.ucenfotec.bl.PalabraEmocional;
 import cr.ac.ucenfotec.bl.Ticket;
 import cr.ac.ucenfotec.bl.BoWAnalyzer;
 
+
 public class Main {
 
+    // Esperar a que el usuario presione ENTER
     private static void presionaEnter(Scanner sc) {
-        System.out.println();
-        System.out.println("(Pulsa ENTER para continuar)");
+        System.out.println("\n(Pulsa ENTER para continuar)");
         sc.nextLine();
     }
 
     public static void main(String[] args) {
-
         Scanner sc = new Scanner(System.in);
 
         Usuario usuarioManager = new Usuario();
         Departamento departamentoManager = new Departamento();
-        PalabraEmocional emocionalManager = new PalabraEmocional();
+        PalabraEmocional diccionarioEmocional = new PalabraEmocional();
         PalabraTecnica tecnicaManager = new PalabraTecnica();
         Ticket ticketManager = new Ticket();
-        BoWAnalyzer bowAnalyzer = new BoWAnalyzer(emocionalManager, tecnicaManager);
+        BoWAnalyzer bowAnalyzer = new BoWAnalyzer(diccionarioEmocional, tecnicaManager);
+        MenuEmociones menuEmociones = new MenuEmociones(diccionarioEmocional, sc);
 
         boolean salir = false;
 
@@ -39,9 +39,10 @@ public class Main {
             System.out.println("3) Registrar Departamento");
             System.out.println("4) Listar Departamentos");
             System.out.println("6) Listar Palabras Técnicas");
-            System.out.println("9) Registrar Ticket");
-            System.out.println("10) Listar Tickets y Analizar BoW");
-            System.out.println("11) Cambiar estado de Ticket");
+            System.out.println("7) Gestionar Palabras Emocionales");
+            System.out.println("8) Registrar Ticket");
+            System.out.println("9) Listar Tickets y Analizar BoW");
+            System.out.println("10) Cambiar estado de Ticket");
             System.out.println("0) Salir");
             System.out.print("Opción: ");
             String opcion = sc.nextLine().trim();
@@ -142,7 +143,12 @@ public class Main {
                     presionaEnter(sc);
                     break;
                 }
-                case "9": {
+                case "7": {
+                    menuEmociones.mostrarMenu();
+                    presionaEnter(sc);
+                    break;
+                }
+                case "8": {
                     List<Usuario> usuarios = usuarioManager.listar();
                     List<Departamento> departamentos = departamentoManager.listar();
 
@@ -207,7 +213,7 @@ public class Main {
                     presionaEnter(sc);
                     break;
                 }
-                case "10": {
+                case "9": {
                     List<Ticket> tickets = ticketManager.listar();
                     if (tickets.isEmpty()) {
                         System.out.println("No hay tickets registrados.");
@@ -261,7 +267,7 @@ public class Main {
                     presionaEnter(sc);
                     break;
                 }
-                case "11": {
+                case "10": {
                     List<Ticket> tickets = ticketManager.listar();
                     if (tickets.isEmpty()) {
                         System.out.println("No hay tickets registrados.");
