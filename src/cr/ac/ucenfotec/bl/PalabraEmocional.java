@@ -1,80 +1,81 @@
 package cr.ac.ucenfotec.bl;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class PalabraEmocional {
-    private String palabra;
-    private String emocion;
-    private final ArrayList<PalabraEmocional> palabras = new ArrayList<>();
+
+        private final Map<String, List<String>> diccionarioEmocional = new LinkedHashMap<>();
 
     //Constructores
-    public PalabraEmocional(String palabra, String emocion){
-        this.palabra = palabra;
-        this.emocion = emocion;
-    }
-    public PalabraEmocional(){};
+
+    public PalabraEmocional() {
+            diccionarioEmocional.put("Frustración", new ArrayList<>(Arrays.asList(
+                    "error","falla","fallando","problema","bloqueado","bloqueada","incorrecto","incorrecta",
+                    "bug","mal","frustado","atascado","frustada","atascada","reiniciar","reiniciado","pegado",
+                    "pegada","problemas","congelado","crash","imposible"
+            )));
+
+            diccionarioEmocional.put("Urgencia", new ArrayList<>(Arrays.asList(
+                    "estres","urgente","inmediatamente","inmediato","rapido","rapidamente","critico","critica",
+                    "prioridad","apurado","apurada","emergencia","asap","antes"
+            )));
+
+            diccionarioEmocional.put("Enojo", new ArrayList<>(Arrays.asList(
+                    "innaceptable","pesimo","pesima","horrible","terrible","indignante","molesto","enojado",
+                    "furioso,","mal","malo","harto","cansado","insoportable","queja","abuso","estafa","decepcionado",
+                    "molesta","enojada","furiosa,","mala","harta","cansada","decepcionada"
+            )));
+
+            diccionarioEmocional.put("Satisfacción", new ArrayList<>(Arrays.asList(
+                    "gracias","excelente","perfecto","genial","maravilloso","agradecido","impecable"
+            )));
+
+            diccionarioEmocional.put("Desesperación", new ArrayList<>(Arrays.asList(
+                    "desesperado","urge","aguanto","ayudenme","imploro","desesperadamente"
+            )));
+
+            diccionarioEmocional.put("Optimismo", new ArrayList<>(Arrays.asList(
+                    "espero","ojala","favor","confio","amable","cordial"
+            )));
+
+            diccionarioEmocional.put("Confusión", new ArrayList<>(Arrays.asList(
+                    "entiendo","significa","ayuda","instrucciones","guia","explicacion","confuso","confusa",
+                    "confusion","aclaracion","aclaren","duda","dudas","perdido","perdida"
+            )));
+
+            diccionarioEmocional.put("Preocupación", new ArrayList<>(Arrays.asList(
+                    "preocupado","temo","temor","riesgo","inseguro","insegura","miedo","preocupa","alarma",
+                    "alarmas","alerta","peligro","peligroso","afecta","perder"
+            )));
+
+            diccionarioEmocional.put("Decepción", new ArrayList<>(Arrays.asList(
+                    "triste","decepcionado","decepcionada","desanimado","desanimada","lastima","esperaba",
+                    "entristece","insatisfecho","insatisfecha","decepcionante"
+            )));
+
+            diccionarioEmocional.put("Alivio", new ArrayList<>(Arrays.asList(
+                    "mejoro","mejora","parcialmente","avance","aliviado","aliviada"
+            )));
+
+            diccionarioEmocional.put("Sorpresa", new ArrayList<>(Arrays.asList(
+                    "sorpresa","sorprendente","extraño","raro","nunca","increible","curioso","inesperado"
+            )));
+
+        }
 
     //Getters
-    public String getPalabra() {
-        return palabra;
-    }
-    public String getEmocion() {
-        return emocion;
-    }
-
-    //Setters
-    public void setPalabra(String palabra) {
-        this.palabra = palabra;
-    }
-    public void setEmocion(String emocion) {
-        this.emocion = emocion;
+    public Map<String, List<String>> getDiccionarioEmocional() {
+        return diccionarioEmocional;
     }
 
     //ToString
     @Override
-    public String toString() {
-        return "PalabraEmocional{" +
-                "emocion='" + emocion + '\'' +
-                ", palabra='" + palabra + '\'' +
-                '}';
-    }
-
-    // Para imprimir bonito en el menú
-    public void imprimirInfo() {
-        System.out.println("Palabra emocional: " + palabra);
-        System.out.println("Categoría: " + emocion);
-    }
-
-    // Registrar = crear y almacenar en memoria
-    public PalabraEmocional registrar(String palabra, String emocion) {
-        validar(palabra, emocion);
-        if (existePalabra(palabra)) throw new IllegalStateException("La palabra ya existe.");
-        PalabraEmocional p = new PalabraEmocional(palabra.trim().toLowerCase(), emocion.toUpperCase());
-        palabras.add(p); // Composición: el diccionario "posee" sus palabras
-        return p;
-    }
-
-    // Listar = copia ordenada por palabra
-    public List<PalabraEmocional> listar() {
-        ArrayList<PalabraEmocional> copia = new ArrayList<>(palabras);
-        copia.sort(Comparator.comparing(PalabraEmocional::getPalabra));
-        return copia;
-    }
-
-
-    private boolean existePalabra(String palabra) {
-        String w = palabra.trim().toLowerCase();
-        for (PalabraEmocional p : palabras) {
-            if (p.getPalabra() != null && p.getPalabra().equals(w)) return true;
+    public String toString(){
+        StringBuilder sb = new StringBuilder("Diccionario Emocional:\n");
+        for (String emocion : diccionarioEmocional.keySet()) {
+            sb.append("\n").append(emocion).append(": ");
+            sb.append(diccionarioEmocional.get(emocion));
         }
-        return false;
-    }
-
-    private void validar(String palabra, String emocion) {
-        if (palabra == null || palabra.isBlank()) throw new IllegalArgumentException("Palabra requerida.");
-        if (emocion == null || emocion.isBlank()) throw new IllegalArgumentException("Emoción requerida.");
-        if (palabra.length() > 80) throw new IllegalArgumentException("Palabra muy larga (máx 80).");
+        return sb.toString();
     }
 }
