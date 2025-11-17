@@ -47,7 +47,7 @@ public class BoWAnalyzer {
         return vector;
     }
 
-    private Map<String, Object> detectarEstadoDeAnimo(Map<String, Integer> vectorTF) {
+    /* private Map<String, Object> detectarEstadoDeAnimo(Map<String, Integer> vectorTF) {
         Map<String, Integer> scoreEmociones = new HashMap<>();
         String dominante = "NEUTRO";
         int maxScore = 0;
@@ -69,6 +69,41 @@ public class BoWAnalyzer {
                         dominante = emocion;
                     }
                 }
+            }
+        }
+
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("EstadoDeAnimo", dominante);
+        resultado.put("ScoreEmocional", maxScore);
+        resultado.put("DetallesEmocionales", scoreEmociones);
+
+        return resultado;
+    } */
+
+    private Map<String, Object> detectarEstadoDeAnimo(Map<String, Integer> vectorTF) {
+        Map<String, Integer> scoreEmociones = new HashMap<>();
+        String dominante = "NEUTRO";
+        int maxScore = 0;
+
+        // Iteramos sobre el diccionario emocional
+        Map<String, List<String>> diccionario = emocionalManager.getDiccionarioEmocional();
+
+        for (Map.Entry<String, List<String>> entry : diccionario.entrySet()) {
+            String emocion = entry.getKey();
+            List<String> palabras = entry.getValue();
+
+            int score = 0;
+            for (String palabra : palabras) {
+                score += vectorTF.getOrDefault(palabra, 0);
+            }
+
+            if (score > 0) {
+                scoreEmociones.put(emocion, score);
+            }
+
+            if (score > maxScore) {
+                maxScore = score;
+                dominante = emocion;
             }
         }
 

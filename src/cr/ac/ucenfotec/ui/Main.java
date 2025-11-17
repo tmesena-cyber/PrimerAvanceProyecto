@@ -37,8 +37,6 @@ public class Main {
                     4) Listar Departamentos
                     5) Registrar Palabra Técnica
                     6) Listar Palabras Técnicas
-                    7) Registrar Palabras Emocionales
-                    8) Listar Palabras Emocionales
                     9) Registrar Ticket
                     10) Listar Tickets y Analizar BoW
                     0) Salir
@@ -132,30 +130,6 @@ public class Main {
                     case "6": {
                         System.out.println("Diccionario Técnico");
                         diccionarioTecnico.listar().forEach(p -> {
-                            p.imprimirInfo();
-                            System.out.println("-----------------------------");
-                        });
-
-                        presionaEnter(sc);
-                        break;
-                    }
-                    case "7": {
-                        System.out.print("Palabra Emocional: ");
-                        String palabra = sc.nextLine();
-                        System.out.print("Emoción: ");
-                        String emocion = sc.nextLine();
-
-                        var p = diccionarioEmocional.registrar(palabra, emocion);
-                        System.out.println("\n Palabra emocional creada: \n");
-
-                        p.imprimirInfo();
-
-                        presionaEnter(sc);
-                        break;
-                    }
-                    case "8": {
-                        System.out.println("Diccionario Emocional");
-                        diccionarioEmocional.listar().forEach(p -> {
                             p.imprimirInfo();
                             System.out.println("-----------------------------");
                         });
