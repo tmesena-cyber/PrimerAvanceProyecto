@@ -27,6 +27,7 @@ public class Main {
         Ticket ticketsManager = new Ticket();
         BoWAnalyzer boWAnalyzer = new BoWAnalyzer(diccionarioEmocional, diccionarioTecnico);
         Scanner sc = new Scanner(System.in);
+        MenuEmociones menuEmociones = new MenuEmociones(diccionarioEmocional, sc);
 
         while (true) {
             System.out.println("""
@@ -37,6 +38,8 @@ public class Main {
                     4) Listar Departamentos
                     5) Registrar Palabra Técnica
                     6) Listar Palabras Técnicas
+                    7) Gestionar Palabras Emocionales
+                    8) Listar Palabras Emocionales
                     9) Registrar Ticket
                     10) Listar Tickets y Analizar BoW
                     0) Salir
@@ -133,6 +136,17 @@ public class Main {
                             p.imprimirInfo();
                             System.out.println("-----------------------------");
                         });
+
+                        presionaEnter(sc);
+                        break;
+                    }
+                    case "7": {
+                        menuEmociones.mostrarMenu();
+                        presionaEnter(sc);
+                        break;
+                    }
+                    case "8": {
+
 
                         presionaEnter(sc);
                         break;
